@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareGuide — History</title>
+<style>
+  :root {
+    --bg: oklch(98% 0.004 240);
+    --surface: oklch(100% 0 0);
+    --fg: oklch(20% 0.02 240);
+    --muted: oklch(50% 0.018 240);
+    --border: oklch(90% 0.006 240);
+    --accent: oklch(56% 0.12 170);
+    --accent-soft: oklch(94% 0.03 170);
+    --accent-deep: oklch(42% 0.1 170);
+    --danger: oklch(52% 0.14 25);
+    --shadow: 0 1px 2px oklch(20% 0.02 240 / 0.04), 0 8px 24px oklch(20% 0.02 240 / 0.06);
+    --font-display: "Söhne", "Avenir Next", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+    --nav-h: 64px;
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app-shell {
+    display: flex;
+    flex-direction: column;
+    max-width: 880px;
+    width: 100%;
+    margin: 0 auto;
+    min-height: 100dvh;
+  }
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 16px 12px;
+    background: color-mix(in oklch, var(--surface) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar h1 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .topbar p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 0.01em;
+  }
+  .text-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 550;
+    letter-spacing: 0.02em;
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    min-height: 44px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .text-btn:hover {
+    color: var(--danger);
+    border-color: color-mix(in oklch, var(--danger) 30%, var(--border));
+    background: oklch(97% 0.015 25);
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 14px 16px 0;
+    flex-wrap: wrap;
+  }
+  .filter {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 510;
+    letter-spacing: 0.01em;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    min-height: 40px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .filter:hover { color: var(--fg); }
+  .filter.active {
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    border-color: color-mix(in oklch, var(--accent) 35%, var(--border));
+  }
+
+  .search-wrap {
+    padding: 12px 16px 0;
+  }
+  .search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 0 14px;
+    min-height: 48px;
+  }
+  .search svg {
+    width: 18px; height: 18px; flex-shrink: 0;
+    stroke: var(--muted); fill: none; stroke-width: 1.7; stroke-linecap: round;
+  }
+  .search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font: inherit;
+    font-size: 15px;
+    background: transparent;
+    color: var(--fg);
+    min-height: 44px;
+  }
+  .search input::placeholder { color: oklch(65% 0.012 240); }
+
+  .list {
+    flex: 1;
+    padding: 16px 16px calc(var(--nav-h) + 24px + var(--safe-b));
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .day-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 4px 2px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: box-shadow 0.15s, border-color 0.15s;
+    text-align: left;
+    width: 100%;
+    font: inherit;
+    color: inherit;
+  }
+  .card:hover {
+    box-shadow: var(--shadow);
+    border-color: color-mix(in oklch, var(--accent) 25%, var(--border));
+  }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .card-q {
+    font-weight: 550;
+    font-size: 14.5px;
+    line-height: 1.4;
+    letter-spacing: -0.005em;
+  }
+  .kind {
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+  }
+  .kind.image {
+    background: oklch(94% 0.03 250);
+    color: oklch(40% 0.06 250);
+  }
+  .card-preview {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-meta {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.01em;
+  }
+
+  .empty {
+    margin: 48px auto;
+    max-width: 320px;
+    text-align: center;
+    color: var(--muted);
+  }
+  .empty-icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 14px;
+    border-radius: 16px;
+    background: var(--accent-soft);
+    color: var(--accent-deep);
+    display: grid;
+    place-items: center;
+  }
+  .empty-icon svg {
+    width: 26px; height: 26px;
+    stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .empty h2 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--fg);
+    letter-spacing: -0.015em;
+    margin-bottom: 6px;
+  }
+  .empty p { font-size: 14px; margin-bottom: 16px; }
+  .empty a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 550;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 12px oklch(56% 0.12 170 / 0.28);
+  }
+
+  /* Detail sheet */
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: oklch(20% 0.02 240 / 0.35);
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+  .sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 60;
+    max-width: 880px;
+    margin: 0 auto;
+    max-height: min(78dvh, 640px);
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    box-shadow: 0 -12px 40px oklch(20% 0.02 240 / 0.12);
+    transform: translateY(110%);
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--safe-b);
+  }
+  .sheet.open { transform: translateY(0); }
+  .sheet-handle {
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    margin: 10px auto 6px;
+  }
+  .sheet-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 18px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sheet-head h2 {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.3;
+  }
+  .sheet-head time {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .close-btn {
+    width: 40px; height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    color: var(--fg);
+  }
+  .close-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .sheet-body {
+    overflow-y: auto;
+    padding: 16px 18px 24px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .sheet-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .sheet-q {
+    font-weight: 550;
+    margin-bottom: 16px;
+  }
+  .sheet-a {
+    padding: 12px 14px;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    white-space: pre-wrap;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 40;
+    height: calc(var(--nav-h) + var(--safe-b));
+    padding-bottom: var(--safe-b);
+    background: color-mix(in oklch, var(--surface) 94%, transparent);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: center;
+  }
+  .nav-inner {
+    max-width: 880px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 2fr);
+    height: var(--nav-h);
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 550;
+    letter-spacing: 0.02em;
+    min-height: 44px;
+  }
+  .nav-item svg {
+    width: 22px; height: 22px;
+    stroke: currentColor; fill: none;
+    stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .nav-item.active { color: var(--accent-deep); }
+  .nav-item.active svg { stroke-width: 2; }
+  .nav-item:hover { color: var(--fg); }
+
+  @media (min-width: 768px) {
+    .app-shell {
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+    .topbar, .toolbar, .search-wrap, .list { padding-left: 24px; padding-right: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sheet, .sheet-backdrop { transition: none; }
+  }
+  /* Dark Mode Styles */
+  [data-theme="dark"] {
+    --bg: oklch(18% 0.014 250);
+    --surface: oklch(23% 0.016 250);
+    --fg: oklch(94% 0.006 250);
+    --muted: oklch(68% 0.014 250);
+    --border: oklch(32% 0.014 250);
+    --accent-soft: oklch(28% 0.05 170);
+    --shadow: 0 1px 2px oklch(0% 0 0 / 0.2), 0 8px 24px oklch(0% 0 0 / 0.35);
+  }
+  
+  [data-theme="dark"] .search input::placeholder { 
+    color: oklch(50% 0.014 250); 
+  }
+  
+  [data-theme="dark"] .close-btn, 
+  [data-theme="dark"] .sheet-a { 
+    background: var(--surface); 
+  }
+</style>
+</head>
+<body>
+<div class="app-shell" data-od-id="history-shell">
+  <header class="topbar" data-od-id="history-topbar">
+    <div>
+      <h1 data-od-id="history-title">History</h1>
+      <p id="countLabel">Your recent questions</p>
+    </div>
+    <button type="button" class="text-btn" id="clearBtn" data-od-id="clear-history">Clear all</button>
+  </header>
+
+  <div class="toolbar" data-od-id="history-filters">
+    <button type="button" class="filter active" data-filter="all">All</button>
+    <button type="button" class="filter" data-filter="text">Questions</button>
+    <button type="button" class="filter" data-filter="image">Images</button>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search" data-od-id="history-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input type="search" id="searchInput" placeholder="Search past questions…" autocomplete="off">
+    </div>
+  </div>
+
+  <main class="list" id="list" data-od-id="history-list"></main>
+
+  <nav class="bottom-nav" data-od-id="bottom-nav" aria-label="Primary">
+    <div class="nav-inner">
+      <a class="nav-item" href="/" data-od-id="nav-chat">
+        <svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 3v-3H6a2 2 0 0 1-2-2V6z"/></svg>
+        Chat
+      </a>
+      <a class="nav-item active" href="/history.html" aria-current="page" data-od-id="nav-history">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        History
+      </a>
+    </div>
+  </nav>
+</div>
+
+<div class="sheet-backdrop" id="backdrop" hidden></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden data-od-id="history-detail">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <div class="sheet-head">
+    <div>
+      <h2 id="sheetTitle">Conversation</h2>
+      <time id="sheetTime"></time>
+    </div>
+    <button type="button" class="close-btn" id="closeSheet" aria-label="Close">
+      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="sheet-body">
+    <div class="sheet-label">You asked</div>
+    <div class="sheet-q" id="sheetQ"></div>
+    <div class="sheet-label">CareGuide replied</div>
+    <div class="sheet-a" id="sheetA"></div>
+  </div>
+</aside>
+
+<script>
+// Apply theme from session before rendering the page
+document.documentElement.setAttribute("data-theme", sessionStorage.getItem("theme") || "light");    
+const listEl = document.getElementById("list");
+const countLabel = document.getElementById("countLabel");
+const searchInput = document.getElementById("searchInput");
+const clearBtn = document.getElementById("clearBtn");
+const backdrop = document.getElementById("backdrop");
+const sheet = document.getElementById("sheet");
+const sheetTitle = document.getElementById("sheetTitle");
+const sheetTime = document.getElementById("sheetTime");
+const sheetQ = document.getElementById("sheetQ");
+const sheetA = document.getElementById("sheetA");
+const closeSheet = document.getElementById("closeSheet");
+
+let filter = "all";
+let query = "";
+let cache = [];
+let totalCount = 0;
+
+function plainPreview(text) {
+  return String(text || "")
+    .replace(/[#*_`>\[\]()!-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function dayKey(iso) {
+  const d = new Date(iso);
+  const today = new Date();
+  const yday = new Date();
+  yday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return "Today";
+  if (d.toDateString() === yday.toDateString()) return "Yesterday";
+  return d.toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" });
+}
+
+function formatTime(iso) {
+  return new Date(iso).toLocaleString(undefined, {
+    month: "short", day: "numeric", hour: "numeric", minute: "2-digit"
+  });
+}
+
+function escapeHtml(str) {
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+async function fetchHistory() {
+  const params = new URLSearchParams();
+  if (filter !== "all") params.set("kind", filter);
+  if (query) params.set("q", query);
+  const qs = params.toString();
+  const res = await fetch("/api/history" + (qs ? `?${qs}` : ""));
+  if (!res.ok) throw new Error("Failed to load history");
+  const data = await res.json();
+  cache = data.history || [];
+  totalCount = typeof data.count === "number" ? data.count : cache.length;
+  // When filtered, still show total session size for empty-state copy.
+  if (filter !== "all" || query) {
+    try {
+      const allRes = await fetch("/api/history");
+      if (allRes.ok) {
+        const allData = await allRes.json();
+        totalCount = allData.count || (allData.history || []).length;
+      }
+    } catch { /* ignore */ }
+  }
+  return cache;
+}
+
+function renderList(items) {
+  countLabel.textContent = totalCount
+    ? `${totalCount} conversation${totalCount === 1 ? "" : "s"} in this session`
+    : "Your recent questions";
+
+  if (!items.length) {
+    listEl.innerHTML = `
+      <div class="empty" data-od-id="history-empty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <h2>${totalCount ? "No matches" : "No history yet"}</h2>
+        <p>${totalCount ? "Try a different search or filter." : "Questions you ask in Chat will show up here."}</p>
+        ${totalCount ? "" : '<a href="/">Start a conversation</a>'}
+      </div>`;
+    return;
+  }
+
+  let html = "";
+  let lastDay = "";
+  items.forEach((item) => {
+    const day = dayKey(item.ts);
+    if (day !== lastDay) {
+      html += `<div class="day-label">${escapeHtml(day)}</div>`;
+      lastDay = day;
+    }
+    const kind = item.kind === "image" ? "image" : "text";
+    const preview = plainPreview(item.answer).slice(0, 140) || "No reply saved";
+    html += `
+      <button type="button" class="card" data-id="${escapeHtml(item.id)}" data-od-id="history-card-${escapeHtml(item.id)}">
+        <div class="card-top">
+          <div class="card-q">${escapeHtml(item.question || "Untitled")}</div>
+          <span class="kind ${kind}">${kind === "image" ? "Image" : "Q&A"}</span>
+        </div>
+        <div class="card-preview">${escapeHtml(preview)}</div>
+        <div class="card-meta">${escapeHtml(formatTime(item.ts))}</div>
+      </button>`;
+  });
+  listEl.innerHTML = html;
+
+  listEl.querySelectorAll(".card").forEach((card) => {
+    card.addEventListener("click", () => {
+      const item = cache.find((x) => x.id === card.dataset.id);
+      if (item) openSheet(item);
+    });
+  });
+}
+
+async function render() {
+  try {
+    listEl.innerHTML = `<div class="empty"><p>Loading…</p></div>`;
+    const items = await fetchHistory();
+    renderList(items);
+  } catch {
+    listEl.innerHTML = `
+      <div class="empty" data-od-id="history-error">
+        <h2>Couldn’t load history</h2>
+        <p>Start the Flask server and try again.</p>
+        <a href="/">Back to chat</a>
+      </div>`;
+  }
+}
+
+function openSheet(item) {
+  sheetTitle.textContent = item.kind === "image" ? "Image review" : "Conversation";
+  sheetTime.textContent = formatTime(item.ts);
+  sheetTime.dateTime = item.ts;
+  sheetQ.textContent = item.question || "";
+  sheetA.textContent = plainPreview(item.answer) || "No reply saved";
+  backdrop.hidden = false;
+  sheet.hidden = false;
+  requestAnimationFrame(() => {
+    backdrop.classList.add("open");
+    sheet.classList.add("open");
+  });
+}
+
+function closeDetail() {
+  backdrop.classList.remove("open");
+  sheet.classList.remove("open");
+  setTimeout(() => {
+    backdrop.hidden = true;
+    sheet.hidden = true;
+  }, 220);
+}
+
+closeSheet.addEventListener("click", closeDetail);
+backdrop.addEventListener("click", closeDetail);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && sheet.classList.contains("open")) closeDetail();
+});
+
+document.querySelectorAll(".filter").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    filter = btn.dataset.filter;
+    document.querySelectorAll(".filter").forEach((b) => b.classList.toggle("active", b === btn));
+    render();
+  });
+});
+
+let searchTimer;
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    query = searchInput.value.trim().toLowerCase();
+    render();
+  }, 200);
+});
+
+clearBtn.addEventListener("click", async () => {
+  if (!totalCount && !cache.length) return;
+  if (!confirm("Clear all conversations for this session?")) return;
+  try {
+    await fetch("/api/history", { method: "DELETE" });
+  } catch { /* ignore */ }
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
