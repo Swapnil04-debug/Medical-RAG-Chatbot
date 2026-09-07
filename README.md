@@ -1,5 +1,5 @@
 # CareGuide — AI Hospital Assistant
-# Deployement Link - https://medical-rag-chatbot-pna0.onrender.com
+## Deployement Link - https://medical-rag-chatbot-pna0.onrender.com
 CareGuide is a Flask-based Retrieval-Augmented Generation (RAG) chatbot that answers medical, medicine, and hospital-related questions using a curated knowledge base, and can analyze uploaded images (e.g. medicine packaging, forms) using a vision-capable LLM. It maintains per-session conversational memory so it can resolve follow-up questions and recall information the user has shared earlier in the chat.
 
 This project was built as a Summer Training Project for academic submission.
